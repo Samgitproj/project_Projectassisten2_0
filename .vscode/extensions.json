@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-toolsai.jupyter",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode.powershell",
+    "tamasfe.even-better-toml",
+    "ms-vscode.live-server"
+  ]
+}

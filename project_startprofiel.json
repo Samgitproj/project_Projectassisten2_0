@@ -1,0 +1,48 @@
+{
+  "projectprofiel": {
+    "naam": "standaard",
+    "doel": "Basisstructuur en afspraken voor projecten aangemaakt via het hulpprogramma 'projectassistent'."
+  },
+
+  "projectstructuur": {
+    "mappen": ["core", "gui", "documents", "resources", "backup"],
+    "belangrijke_bestanden": [
+      "main.py (basisopstart met logging)",
+      "gui/MainWindow.ui (startpunt van de GUI, opgebouwd in Qt Designer)",
+      "documents/requirements.txt (vereiste packages, standaard PyQt6)",
+      "README.md (beschrijving van het project)"
+    ],
+    "virtuele_omgeving": {
+      "pad": "C:/virt omgeving/<projectnaam>/venv",
+      "automatisch_gegenereerd": true
+    }
+  },
+
+  "gui_afspraken": {
+    "ui_bestanden": {
+      "mag_nooit leeg zijn": true,
+      "hoofdstructuur": "QMainWindow met centralwidget",
+      "regels": [
+        "Gebruik <item> rond elke <layout> en <widget>",
+        "<resources/> en <connections/> moeten na </widget> komen"
+      ]
+    }
+  },
+
+  "ondersteuning": {
+    "hulpprogramma": "projectassistent",
+    "beschrijving": "Een extern programma waarmee dit project beheerd, aangepast of uitgebreid kan worden (optioneel).",
+    "mogelijkheden": [
+      "scripts bekijken en aanpassen",
+      "wijzigingen loggen",
+      "diffs tonen",
+      "rollback uitvoeren",
+      "GUI-testen uitvoeren"
+    ],
+    "gedragscode": {
+      "alle wijzigingen worden eerst getoond als preview",
+      "wijzigingen worden pas toegepast na jouw bevestiging",
+      "er wordt altijd een backup en changelog gemaakt"
+    }
+  }
+}

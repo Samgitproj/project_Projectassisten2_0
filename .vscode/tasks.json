@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run app",
+      "type": "shell",
+      "command": "& 'C:\\\\virt omgeving\\\\Projectassisten2_0\\\\venv\\\\Scripts\\\\Activate.ps1'; python main.py",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "UI \u2192 PY (MainWindow)",
+      "type": "shell",
+      "command": "& 'C:\\\\virt omgeving\\\\Projectassisten2_0\\\\venv\\\\Scripts\\\\Activate.ps1'; 'C:\\\\virt omgeving\\\\Projectassisten2_0\\\\venv\\\\Scripts\\\\pyuic6.exe' gui/MainWindow.ui -o gui/MainWindow.py",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open UI in Designer",
+      "type": "shell",
+      "command": "designer gui/MainWindow.ui",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Setup venv on this machine",
+      "type": "shell",
+      "command": "python -m venv \"C:\\virt omgeving\\Projectassisten2_0\\venv\"; & 'C:\\\\virt omgeving\\\\Projectassisten2_0\\\\venv\\\\Scripts\\\\Activate.ps1'; pip install -r documents/requirements.txt",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
