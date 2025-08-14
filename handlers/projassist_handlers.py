@@ -1,4 +1,4 @@
-[SECTION: Imports & Constants]
+# [SECTION: Imports & Constants]
 from __future__ import annotations
 import sys, json, logging, subprocess
 from pathlib import Path
@@ -7,11 +7,11 @@ from PyQt6 import QtWidgets, QtCore
 import os, shutil
 
 
-[END: Imports & Constants]
+# [END: Imports & Constants]
 APP_NAME = "Projectassisten2_0"
 VENV_PY_EXE = Path(r"C:\virt omgeving\Projectassisten2_0\venv\Scripts\python.exe")
-[CLASS: ProjAssistHandlers]
-[FUNC: __init__]
+# [CLASS: ProjAssistHandlers]
+# [FUNC: __init__]
 
 
 class ProjAssistHandlers:
@@ -20,11 +20,12 @@ class ProjAssistHandlers:
         self.parent = parent
         self.json_path: Optional[Path] = None
         self.json_data: dict = {}
-[END: __init__]
+# [END: __init__]
         self.project_root: Optional[Path] = None
-[FUNC: _init_ui_defaults]
         self._connect_signals()
+# [FUNC: _init_ui_defaults]
         self._init_ui_defaults()
+
 
     def _init_ui_defaults(self):
         if hasattr(self.ui, "plainTextScriptEditor"):
@@ -36,11 +37,12 @@ class ProjAssistHandlers:
                 w.setText("—")
         # nieuwe line-edits leegmaken
         for name in ("lineLoadEditscript", "lineEditDeleteScipt"):
-[END: _init_ui_defaults]
+# [END: _init_ui_defaults]
             w = getattr(self.ui, name, None)
-[FUNC: _connect_signals]
             if w:
+# [FUNC: _connect_signals]
                 w.setText("")
+
 
     def _connect_signals(self):
         c = self.ui
@@ -82,11 +84,12 @@ class ProjAssistHandlers:
 
         # JSON laden (tab Scripts & JSON)
         hook("btnLoadJson", self._load_json_clicked)
-[END: _connect_signals]
+# [END: _connect_signals]
 
-[FUNC: _load_json_clicked]
-        # knop om scripts om te zetten naar vaste marker structuur
+        # NIEUW: markers normaliseren
+# [FUNC: _load_json_clicked]
         hook("btnSetMarkers", self._set_markers_clicked)
+
 
     def _load_json_clicked(self):
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -95,11 +98,12 @@ class ProjAssistHandlers:
             "",
             "ProjectAssist (*.projassist.json);;JSON (*.json)",
         )
-[END: _load_json_clicked]
+# [END: _load_json_clicked]
         if not path:
-[FUNC: _load_json]
             return
+# [FUNC: _load_json]
         self._load_json(Path(path))
+
 
     def _load_json(self, json_path: Path):
         try:
@@ -116,11 +120,12 @@ class ProjAssistHandlers:
         self.project_root = json_path.parent
         name = self.json_data.get("project_name") or self.project_root.name
         if hasattr(self.ui, "lblProjectName"):
-[END: _load_json]
+# [END: _load_json]
             self.ui.lblProjectName.setText(str(name))
-[FUNC: _browse_load_script_clicked]
         if hasattr(self.ui, "lblProjectName1"):
+# [FUNC: _browse_load_script_clicked]
             self.ui.lblProjectName1.setText(str(name))
+
 
     def _browse_load_script_clicked(self):
         start_dir = str(self.project_root or "")
@@ -132,11 +137,12 @@ class ProjAssistHandlers:
         )
         if not path:
             return
-[END: _browse_load_script_clicked]
+# [END: _browse_load_script_clicked]
         le = getattr(self.ui, "lineLoadEditscript", None)
-[FUNC: _load_script_to_editor_clicked]
         if le:
+# [FUNC: _load_script_to_editor_clicked]
             le.setText(path)
+
 
     def _load_script_to_editor_clicked(self):
         le = getattr(self.ui, "lineLoadEditscript", None)
@@ -149,11 +155,12 @@ class ProjAssistHandlers:
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
         except Exception as ex:
-[END: _load_script_to_editor_clicked]
+# [END: _load_script_to_editor_clicked]
             text = f"[Kon bestand niet lezen]\n{path}\n\n{ex}"
-[FUNC: _browse_delete_script_clicked]
         if hasattr(self.ui, "plainTextScriptEditor"):
+# [FUNC: _browse_delete_script_clicked]
             self.ui.plainTextScriptEditor.setPlainText(text)
+
 
     def _browse_delete_script_clicked(self):
         start_dir = str(self.project_root or "")
@@ -165,11 +172,12 @@ class ProjAssistHandlers:
         )
         if not path:
             return
-[END: _browse_delete_script_clicked]
+# [END: _browse_delete_script_clicked]
         le = getattr(self.ui, "lineEditDeleteScipt", None)  # let op: objectName exact
-[FUNC: _delete_script_clicked]
         if le:
+# [FUNC: _delete_script_clicked]
             le.setText(path)
+
 
     def _delete_script_clicked(self):
         le = getattr(self.ui, "lineEditDeleteScipt", None)
@@ -225,11 +233,12 @@ class ProjAssistHandlers:
 
         QtWidgets.QMessageBox.information(
             self.parent, "Script", f"Script verwijderd.\n{msg_json}"
-[END: _delete_script_clicked]
+# [END: _delete_script_clicked]
         )
-[FUNC: _set_markers_clicked]
         if le:
+# [FUNC: _set_markers_clicked]
             le.setText("")
+
 
     def _set_markers_clicked(self):
         # Haal geselecteerd script op uit jouw bestaande veld (zelfde als load)
@@ -254,20 +263,22 @@ class ProjAssistHandlers:
                 git_callback=lambda paths, msg: self._git_record(paths, msg),
             )
             # Toon pop‑up met de stappen
-[END: _set_markers_clicked]
+# [END: _set_markers_clicked]
             QtWidgets.QMessageBox.information(self.parent, "Markers", "\n".join(logs))
-[FUNC: _choose_project_folder]
         except Exception as ex:
+# [FUNC: _choose_project_folder]
             QtWidgets.QMessageBox.critical(self.parent, "Markers", f"Fout:\n{ex}")
+
 
     def _choose_project_folder(self):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self.parent, "Kies projectfolder"
-[END: _choose_project_folder]
+# [END: _choose_project_folder]
         )
-[FUNC: _delete_project_clicked]
         if folder and hasattr(self.ui, "lineProjectFolder"):
+# [FUNC: _delete_project_clicked]
             self.ui.lineProjectFolder.setText(folder)
+
 
     def _delete_project_clicked(self):
         """
@@ -420,11 +431,12 @@ class ProjAssistHandlers:
                 self.parent,
                 "Verwijderd",
                 f"✅ Project '{project_name}' is volledig verwijderd.",
-[END: _delete_project_clicked]
+# [END: _delete_project_clicked]
             )
-[FUNC: _prime_github_token_from_global_env]
         else:
+# [FUNC: _prime_github_token_from_global_env]
             QtWidgets.QMessageBox.critical(self.parent, "Fout", "\n".join(fouten))
+
 
     def _prime_github_token_from_global_env(self):
         """
@@ -452,11 +464,12 @@ class ProjAssistHandlers:
                 v = v.strip().strip('"').strip("'")
                 if k in ("GITHUB_TOKEN", "GH_TOKEN") and v:
                     os.environ.setdefault(k, v)
-[END: _prime_github_token_from_global_env]
+# [END: _prime_github_token_from_global_env]
         except Exception:
-[FUNC: _open_github_repo]
             # stil falen – we tonen eventuele fouten via de delete-functie resultaten
+# [FUNC: _open_github_repo]
             pass
+
 
     def _open_github_repo(self):
         import webbrowser
@@ -476,29 +489,32 @@ class ProjAssistHandlers:
         if url:
             webbrowser.open(url)
         else:
-[END: _open_github_repo]
+# [END: _open_github_repo]
             QtWidgets.QMessageBox.information(
-[FUNC: _choose_new_script_folder]
                 self.parent, "GitHub", "Geen GitHub-URL gevonden."
+# [FUNC: _choose_new_script_folder]
             )
+
 
     def _choose_new_script_folder(self):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self.parent, "Kies map voor nieuw script"
-[END: _choose_new_script_folder]
+# [END: _choose_new_script_folder]
         )
-[FUNC: _choose_existing_script_file]
         if folder and hasattr(self.ui, "lineScriptLocatie"):
+# [FUNC: _choose_existing_script_file]
             self.ui.lineScriptLocatie.setText(folder)
+
 
     def _choose_existing_script_file(self):
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self.parent, "Kies bestaand script", "", "Python (*.py);;Alle (*.*)"
-[END: _choose_existing_script_file]
+# [END: _choose_existing_script_file]
         )
-[FUNC: _create_new_script_clicked]
         if path and hasattr(self.ui, "lineScriptPad"):
+# [FUNC: _create_new_script_clicked]
             self.ui.lineScriptPad.setText(path)
+
 
     def _create_new_script_clicked(self):
         if not self.json_path:
@@ -528,11 +544,12 @@ class ProjAssistHandlers:
         new_file = Path(folder) / filename
         self._git_record([new_file], f"Add script: {entry.get('path')}")
         set_github_url_for_script(self.json_path, new_file, branch="main")
-[END: _create_new_script_clicked]
+# [END: _create_new_script_clicked]
         QtWidgets.QMessageBox.information(
-[FUNC: _register_existing_script_clicked]
             self.parent, "Script", f"Aangemaakt en geregistreerd: {entry.get('path')}"
+# [FUNC: _register_existing_script_clicked]
         )
+
 
     def _register_existing_script_clicked(self):
         if not self.json_path:
@@ -556,29 +573,32 @@ class ProjAssistHandlers:
         entry = register_existing_script(self.json_path, path)
         self._git_record([Path(path)], f"Register script: {entry.get('path')}")
         set_github_url_for_script(self.json_path, path, branch="main")
-[END: _register_existing_script_clicked]
+# [END: _register_existing_script_clicked]
         QtWidgets.QMessageBox.information(
-[FUNC: _choose_build_project_path]
             self.parent, "Script", f"Geregistreerd: {entry.get('path')}"
+# [FUNC: _choose_build_project_path]
         )
+
 
     def _choose_build_project_path(self):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self.parent, "Kies projectmap met main.py"
-[END: _choose_build_project_path]
+# [END: _choose_build_project_path]
         )
-[FUNC: _choose_build_output_path]
         if folder and hasattr(self.ui, "lineProjectPath"):
+# [FUNC: _choose_build_output_path]
             self.ui.lineProjectPath.setText(folder)
+
 
     def _choose_build_output_path(self):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self.parent, "Kies doelmap voor .exe"
-[END: _choose_build_output_path]
+# [END: _choose_build_output_path]
         )
-[FUNC: _export_project_clicked]
         if folder and hasattr(self.ui, "lineOutputPath"):
+# [FUNC: _export_project_clicked]
             self.ui.lineOutputPath.setText(folder)
+
 
     def _export_project_clicked(self):
         from build_exe import build_exe
@@ -601,11 +621,12 @@ class ProjAssistHandlers:
         ok, msg = build_exe(proj, out, entry_script="main.py")
         QtWidgets.QMessageBox.information(
             self.parent,
-[END: _export_project_clicked]
+# [END: _export_project_clicked]
             "Export" if ok else "Fout",
-[FUNC: _git_record]
             (msg[-2000:] if isinstance(msg, str) else str(msg)),
+# [FUNC: _git_record]
         )
+
 
     def _git_record(self, paths: list[Path | str], message: str):
         try:
@@ -620,11 +641,12 @@ class ProjAssistHandlers:
             try:
                 _ok3, _out3 = push(cwd=self.project_root)
             except Exception:
-[END: _git_record]
+# [END: _git_record]
                 pass
-[FUNC: open_project_creator]
         except Exception:
+# [FUNC: open_project_creator]
             logging.debug("git_record: genegeerde fout", exc_info=True)
+
 
     def open_project_creator(self):
         Ui_MainWindow = None
@@ -662,29 +684,32 @@ class ProjAssistHandlers:
             pass
         ui_creator.StartCreateProject.clicked.connect(
             lambda: self._on_start_create_project(win, ui_creator)
-[END: open_project_creator]
+# [END: open_project_creator]
         )
-[FUNC: _choose_creator_folder]
         win.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
+# [FUNC: _choose_creator_folder]
         win.show()
+
 
     def _choose_creator_folder(self, ui_creator):
         folder = QtWidgets.QFileDialog.getExistingDirectory(
             self.parent, "Kies projectbasis"
-[END: _choose_creator_folder]
+# [END: _choose_creator_folder]
         )
-[FUNC: _on_start_create_project]
         if folder:
+# [FUNC: _on_start_create_project]
             ui_creator.ShowProjectFolder.setText(folder)
+
 
     def _on_start_create_project(self, dlg: QtWidgets.QWidget, ui_creator):
         ui_creator.StartCreateProject.setEnabled(False)
         try:
-[END: _on_start_create_project]
+# [END: _on_start_create_project]
             self._run_create_project(dlg, ui_creator)
-[FUNC: _run_create_project]
         finally:
+# [FUNC: _run_create_project]
             ui_creator.StartCreateProject.setEnabled(True)
+
 
     def _run_create_project(self, dlg: QtWidgets.QWidget, ui_creator):
         base = ui_creator.ShowProjectFolder.text().strip()
@@ -714,13 +739,12 @@ class ProjAssistHandlers:
                     dlg,
                     "Project",
                     f"Fout bij aanmaken:\n\n{proc.stdout}\n{proc.stderr}",
-[END: _run_create_project]
+# [END: _run_create_project]
                 )
         except Exception as ex:
+# [FUNC: _on_rm_error]
             QtWidgets.QMessageBox.critical(dlg, "Project", f"Onverwachte fout:\n{ex}")
-[FUNC: _on_rm_error]
 
-    # VOEG DEZE HELPERS TOE (bijv. onderaan de class)
 
     def _on_rm_error(self, func, path, exc_info):
         """Forceer verwijdering van read-only bestanden (Windows) — zelfde idee als 'verwijder_forceer' in MainCodeAssist."""
@@ -728,11 +752,12 @@ class ProjAssistHandlers:
 
         try:
             os.chmod(path, stat.S_IWRITE)
-[END: _on_rm_error]
+# [END: _on_rm_error]
             func(path)
-[FUNC: _prime_github_token_from_dotenv]
         except Exception:
+# [FUNC: _prime_github_token_from_dotenv]
             pass
+
 
     def _prime_github_token_from_dotenv(self, project_root: Path):
         """
@@ -753,11 +778,12 @@ class ProjAssistHandlers:
                     k = k.strip()
                     v = v.strip().strip('"').strip("'")
                     if k in ("GITHUB_TOKEN", "GH_TOKEN") and v:
-[END: _prime_github_token_from_dotenv]
+# [END: _prime_github_token_from_dotenv]
                         os.environ.setdefault(k, v)
-[FUNC: _delete_local_venv_variants]
         except Exception:
+# [FUNC: _delete_local_venv_variants]
             pass
+
 
     def _delete_local_venv_variants(self, project_root: Path) -> str:
         """
@@ -770,8 +796,11 @@ class ProjAssistHandlers:
                 if cand.exists() and cand.is_dir():
                     shutil.rmtree(cand, ignore_errors=False)
                     msgs.append(f"Extra venv verwijderd: {cand}")
-[END: _delete_local_venv_variants]
+# [END: _delete_local_venv_variants]
             except Exception as ex:
-[END: ProjAssistHandlers]
+# [END: ProjAssistHandlers]
                 msgs.append(f"Extra venv niet verwijderd: {cand} ({ex})")
         return "\n".join(msgs)
+
+
+
