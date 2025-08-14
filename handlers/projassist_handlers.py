@@ -1,4 +1,4 @@
-# [SECTION: Imports & Constants]
+# [SECTION: Imports]
 from __future__ import annotations
 import sys, json, logging, subprocess
 from pathlib import Path
@@ -7,7 +7,7 @@ from PyQt6 import QtWidgets, QtCore
 import os, shutil
 
 
-# [END: Imports & Constants]
+# [END: Imports]
 APP_NAME = "Projectassisten2_0"
 VENV_PY_EXE = Path(r"C:\virt omgeving\Projectassisten2_0\venv\Scripts\python.exe")
 
