@@ -800,7 +800,7 @@ class ProjAssistHandlers:
                 msgs.append(f"Extra venv niet verwijderd: {cand} ({ex})")
         return "\n".join(msgs)
 
-# [END: ProjAssistHandlers]
 # [END: _delete_local_venv_variants]
+# [END: ProjAssistHandlers]
 
 
