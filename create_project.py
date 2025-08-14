@@ -20,7 +20,6 @@ COPYFILES_PATH = (
 )
 
 
-# [FUNC:create_github_repo] START
 # [FUNC: create_github_repo]
 def create_github_repo(project_name: str) -> str | None:
     """Maak (optioneel) een GitHub-repo. Slaat over als GITHUB_TOKEN ontbreekt."""
@@ -47,10 +46,8 @@ def create_github_repo(project_name: str) -> str | None:
 
 # [END: create_github_repo]
 
-# [FUNC:create_github_repo] END
 
 
-# [FUNC:git_init_and_push] START
 # [FUNC: git_init_and_push]
 def git_init_and_push(project_path: str, github_repo_url: str):
     try:
@@ -76,10 +73,8 @@ def git_init_and_push(project_path: str, github_repo_url: str):
 
 # [END: git_init_and_push]
 
-# [FUNC:git_init_and_push] END
 
 
-# [FUNC:_write_vscode] START
 # [FUNC: _write_vscode]
 def _write_vscode(project_path: str, project_name: str, venv_root: str):
     """
@@ -151,10 +146,8 @@ def _write_vscode(project_path: str, project_name: str, venv_root: str):
 
 # [END: _write_vscode]
 
-# [FUNC:_write_vscode] END
 
 
-# [FUNC:create_project] START
 # [FUNC: create_project]
 def create_project(base_folder: str, project_name: str, readme_text: str):
     """
@@ -367,7 +360,6 @@ QLineEdit, QTextEdit { padding: 4px; }
 
 # [END: create_project]
 
-# [FUNC:create_project] END
 
 
 if __name__ == "__main__":
