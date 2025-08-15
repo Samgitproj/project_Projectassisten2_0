@@ -247,6 +247,10 @@ class Item:
 #     """Wordt later met ADD vervangen."""
 #     pass
 # [END: FUNC: placeholder_new_feature]
+# [SECTION: DEMO_ADDED_CONSTANTS]
+APP_BUILD = "1.0.0"
+APP_AUTHOR = "Test User"
+# [END: SECTION: DEMO_ADDED_CONSTANTS]
 # [END: SECTION: EXTENSION_POINTS]
 
 
