@@ -1,26 +1,31 @@
 # [SECTION: Imports]
+import logging
 import os
 import sys
 import subprocess
 from pathlib import Path
 from PyQt6 import QtWidgets
+logger = logging.getLogger(__name__)
 
 # [END: Imports]
 # Venv-pad patroon: C:\virt omgeving\<project>\venv\Scripts\pyuic6.exe
 
 # [FUNC: _get_project_name]
 def _get_project_name() -> str:
+logger.debug("_get_project_name() called")
     """Bepaalt projectnaam (= mapnaam van dit script)."""
     return Path(__file__).resolve().parent.name
 
 # [END: _get_project_name]
 # [FUNC: _get_pyuic6_path]
+logger.debug("_get_pyuic6_path() called")
 def _get_pyuic6_path() -> Path:
     """Bouwt pad naar pyuic6.exe in jouw vaste venv-structuur."""
     project_name = _get_project_name()
     return Path(fr"C:\virt omgeving\{project_name}\venv\Scripts\pyuic6.exe")
 
 # [END: _get_pyuic6_path]
+    logger.debug("convert_ui_to_py() called")
 # [FUNC: convert_ui_to_py]
 def convert_ui_to_py(ui_file: Path) -> Path:
     """Converteert .ui naar .py naast het .ui-bestand via pyuic6.exe."""
@@ -46,6 +51,7 @@ def convert_ui_to_py(ui_file: Path) -> Path:
     return out_file
 
 # [END: convert_ui_to_py]
+logger.debug("__init__() called")
 # [CLASS: UI2PYWindow]
 class UI2PYWindow(QtWidgets.QWidget):
 # [FUNC: __init__]
@@ -53,6 +59,7 @@ class UI2PYWindow(QtWidgets.QWidget):
         super().__init__(parent)
         self.setWindowTitle("UI → PY Converter (Minimal)")
         self._build_ui()
+        logger.debug("_build_ui() called")
         self._wire_events()
 
 # [END: __init__]
@@ -73,11 +80,13 @@ class UI2PYWindow(QtWidgets.QWidget):
         lay.addWidget(self.btnConvert)
         lay.addWidget(self.lblStatus)
 
+        logger.debug("_wire_events() called")
         self.setLayout(lay)
         self.resize(520, 140)
 
 # [END: _build_ui]
 # [FUNC: _wire_events]
+logger.debug("_on_browse_clicked() called")
     def _wire_events(self):
         self.btnBrowse.clicked.connect(self._on_browse_clicked)
         self.btnConvert.clicked.connect(self._on_convert_clicked)
@@ -93,6 +102,7 @@ class UI2PYWindow(QtWidgets.QWidget):
             "Kies een .ui-bestand",
             start_dir,
             "UI Files (*.ui)"
+            logger.debug("_on_convert_clicked() called")
         )
         if file:
             self.editPath.setText(file)
@@ -113,6 +123,7 @@ class UI2PYWindow(QtWidgets.QWidget):
             self.lblStatus.setText("Fout: " + str(ex))
             QtWidgets.QMessageBox.critical(self, "Fout", str(ex))
 
+            logger.debug("main() called")
 # [END: _on_convert_clicked]
 # [END: UI2PYWindow]
 # [FUNC: main]

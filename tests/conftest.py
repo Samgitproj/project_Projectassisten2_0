@@ -1,4 +1,5 @@
 # [SECTION: Imports]
+import logging
 import sys, shutil
 from pathlib import Path
 import pytest
@@ -17,6 +18,7 @@ from handlers.codewijziger_controller import CodeWijzigerController
 
 DUMMY_BASE = """\
 from typing import Iterable, List
+logger = logging.getLogger(__name__)
 
 def process_items(items: Iterable[int]) -> List[int]:
     base = [x * 2 for x in items]
@@ -34,6 +36,7 @@ def dangerous_op(path):
 
 
 # [FUNC: make_multimatch_content]
+logger.debug("make_multimatch_content() called")
 def make_multimatch_content() -> str:
     return DUMMY_BASE.replace(
         "# [FUNC: process_items]", "# [FUNC: process_items]\n# variant A"
@@ -49,6 +52,7 @@ def make_multimatch_content() -> str:
 
 # [FUNC: tmp_target]
 @pytest.fixture
+logger.debug("tmp_target() called")
 def tmp_target(tmp_path: Path):
     """Maakt een tijdelijk doelbestand met de dummy-inhoud."""
     tgt = tmp_path / "dummy_target.py"
@@ -57,6 +61,7 @@ def tmp_target(tmp_path: Path):
 
 # [END: tmp_target]
 
+logger.debug("tmp_target_multimatch() called")
 # [FUNC: tmp_target_multimatch]
 @pytest.fixture
 def tmp_target_multimatch(tmp_path: Path):
@@ -66,6 +71,7 @@ def tmp_target_multimatch(tmp_path: Path):
 
 # [END: tmp_target_multimatch]
 
+    logger.debug("ui_env() called")
 # [FUNC: ui_env]
 @pytest.fixture
 def ui_env(qtbot, tmp_path: Path):
@@ -80,6 +86,7 @@ def ui_env(qtbot, tmp_path: Path):
     win.show()
     qtbot.addWidget(win)
     return ui, win, ctrl
+    logger.debug("paste_form_and_analyse() called")
 
 # [END: ui_env]
 

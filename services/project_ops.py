@@ -1,4 +1,5 @@
 # [SECTION: Imports]
+import logging
 from pathlib import Path
 from shutil import rmtree
 import os
@@ -13,6 +14,7 @@ def _on_rm_error(func, path, exc_info):
     Helper voor rmtree: maak bestand schrijfbaar en probeer opnieuw.
     Voornamelijk nuttig op Windows bij .git/objects.
     """
+logger.debug("_on_rm_error() called")
     try:
         os.chmod(path, stat.S_IWRITE)
         func(path)
@@ -33,6 +35,7 @@ def delete_project(
     """
     Verwijder projectmap (guardrail: .projassist.json moet bestaan).
     Extra: eerst .git forceren te wissen; optioneel ook de venv: <venv_base>/<project_name>/venv.
+logger.debug("delete_project() called")
     """
     root = Path(project_root).resolve()
 
@@ -109,9 +112,11 @@ def delete_project(
 # [FUNC: _parse_github_owner_repo]
 def _parse_github_owner_repo(url: str) -> tuple[bool, str, str]:
     """
+logger.debug("_parse_github_owner_repo() called")
     Parse 'https://github.com/<owner>/<repo>[.git]' → (ok, owner, repo)
     """
     from urllib.parse import urlparse
+logger = logging.getLogger(__name__)
 
     try:
         p = urlparse(url.strip())
@@ -135,6 +140,7 @@ def _parse_github_owner_repo(url: str) -> tuple[bool, str, str]:
 def delete_github_repo(
     github_repo_url: str, token: str | None = None
 ) -> tuple[bool, str]:
+logger.debug("delete_github_repo() called")
     """
     Verwijder de GitHub-repo via API. Vereist een PAT in env (GITHUB_TOKEN of GH_TOKEN) of meegegeven token.
     Retourneert (ok, message).
@@ -181,6 +187,7 @@ def delete_github_repo(
 
 
 
+logger.debug("_parse_github_owner_repo() called")
 # [FUNC: _parse_github_owner_repo]
 def _parse_github_owner_repo(url: str) -> tuple[bool, str, str]:
     """
@@ -216,6 +223,7 @@ def delete_github_repo(
     repo_prefix: str = "project_",
 ) -> tuple[bool, str]:
     """
+        logger.debug("delete_github_repo() called")
     Verwijder de GitHub-repo via API.
     - Als URL gegeven → parse owner/repo.
     - Anders: owner uit .env (GH_OWNER/GITHUB_OWNER) of default_owner;

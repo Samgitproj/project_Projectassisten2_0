@@ -1,10 +1,12 @@
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtWidgets, QtCore
 
 
 # [END: Imports]
 # [FUNC: _uncheck_all_hunks]
 def _uncheck_all_hunks(ui):
+logger.debug("_uncheck_all_hunks() called")
     for i in range(ui.listHunks.count()):
         it = ui.listHunks.item(i)
         it.setCheckState(QtCore.Qt.CheckState.Unchecked)
@@ -12,6 +14,7 @@ def _uncheck_all_hunks(ui):
 # [END: _uncheck_all_hunks]
 
 # [FUNC: _check_all_hunks]
+logger.debug("_check_all_hunks() called")
 def _check_all_hunks(ui):
     for i in range(ui.listHunks.count()):
         it = ui.listHunks.item(i)
@@ -19,6 +22,7 @@ def _check_all_hunks(ui):
 
 # [END: _check_all_hunks]
 
+logger.debug("test_apply_selected_and_block() called")
 # [FUNC: test_apply_selected_and_block]
 def test_apply_selected_and_block(qtbot, ui_env, tmp_target):
     ui, win, ctrl = ui_env
@@ -37,6 +41,7 @@ def process_items(items: Iterable[int]) -> List[int]:
     return [x for x in base if x % 3 != 0]
 """
     from tests.conftest import paste_form_and_analyse
+logger = logging.getLogger(__name__)
 
     paste_form_and_analyse(qtbot, ui, form)
 

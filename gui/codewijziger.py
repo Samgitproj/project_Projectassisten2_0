@@ -7,13 +7,16 @@
 
 
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtCore, QtGui, QtWidgets
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
 # [CLASS: Ui_CodeWijzigerWindow]
 class Ui_CodeWijzigerWindow(object):
 # [FUNC: setupUi]
+logger.debug("setupUi() called")
     def setupUi(self, CodeWijzigerWindow):
         CodeWijzigerWindow.setObjectName("CodeWijzigerWindow")
         CodeWijzigerWindow.resize(1162, 862)
@@ -237,6 +240,7 @@ class Ui_CodeWijzigerWindow(object):
         CodeWijzigerWindow.setTabOrder(self.chkLockMarkers, self.chkHideIdentical)
 
 # [END: setupUi]
+logger.debug("retranslateUi() called")
 # [FUNC: retranslateUi]
     def retranslateUi(self, CodeWijzigerWindow):
         _translate = QtCore.QCoreApplication.translate

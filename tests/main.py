@@ -1,16 +1,19 @@
 # [SECTION: Imports]
+import logging
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 from PyQt6 import QtWidgets, uic, QtCore
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
 # [CLASS: App]
 class App(QtWidgets.QDialog):
 # [FUNC: __init__]
+logger.debug("__init__() called")
     def __init__(self):
         super().__init__()
         uic.loadUi("ProjAssist.ui", self)
@@ -32,12 +35,14 @@ class App(QtWidgets.QDialog):
         self._reset_ui()
 
 # [END: __init__]
+logger.debug("_reset_ui() called")
 # [FUNC: _reset_ui]
     def _reset_ui(self):
         self.lblProjectName.setText("— geen project —")
         self.listScripts.clear()
         self.listScriptsCode.clear()
 
+        logger.debug("on_load_json_clicked() called")
 # [END: _reset_ui]
 # [FUNC: on_load_json_clicked]
     def on_load_json_clicked(self):
@@ -50,6 +55,7 @@ class App(QtWidgets.QDialog):
         if not path:
             return
         self._load_json(Path(path))
+            logger.debug("_load_json() called")
 
 # [END: on_load_json_clicked]
 # [FUNC: _load_json]
@@ -83,6 +89,7 @@ class App(QtWidgets.QDialog):
 
 # [END: _load_json]
 # [FUNC: _filtered_script_paths_from_json]
+            logger.debug("_filtered_script_paths_from_json() called")
     def _filtered_script_paths_from_json(self) -> list[str]:
         """
         Haal paden uit scripts[] in JSON.
@@ -102,6 +109,7 @@ class App(QtWidgets.QDialog):
             # filter: __init__.py uitsluiten
             if fname == "__init__.py":
                 continue
+            logger.debug("_populate_list() called")
             results.append(p)
         return results
 

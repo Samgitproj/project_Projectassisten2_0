@@ -1,6 +1,7 @@
 # handlers/codewijziger_controller.py
 
 # [SECTION: Imports]
+import logging
 from __future__ import annotations
 
 import os
@@ -14,6 +15,7 @@ from PyQt6 import QtCore, QtWidgets
 
 import subprocess
 from datetime import datetime
+logger = logging.getLogger(__name__)
 
 
 
@@ -69,6 +71,7 @@ _CODE_FENCE = re.compile(r"^\s*```+")
 
 
 # [FUNC: _expand_path]
+logger.debug("_expand_path() called")
 def _expand_path(p: str) -> Path:
     p = p.strip().strip('"').strip("'")
     p = os.path.expandvars(os.path.expanduser(p))
@@ -81,6 +84,7 @@ def parse_wijzigformulier(text: str) -> FormState:
     """
     Parse het standaard wijzigformulier.
     - Herkent labels (Bestand, Actie, Marker-van, Marker-tot, Contextregels, Blok-ID, Korte reden, Voorstel-blok).
+logger.debug("parse_wijzigformulier() called")
     - Alles na 'Voorstel-blok:' is het voorstel; code fences ``` worden genegeerd.
     """
     lines = text.splitlines()
@@ -149,6 +153,7 @@ def parse_wijzigformulier(text: str) -> FormState:
 # [END: parse_wijzigformulier]
 
 
+logger.debug("_read_file_lines() called")
 
 # [FUNC: _read_file_lines]
 def _read_file_lines(path: Path) -> List[str]:
@@ -157,6 +162,7 @@ def _read_file_lines(path: Path) -> List[str]:
 # [END: _read_file_lines]
 
 # [FUNC: _find_marker_range]
+    logger.debug("_find_marker_range() called")
 def _find_marker_range(
     lines: List[str], start_marker: str, end_marker: str
 ) -> Tuple[int, int]:
@@ -178,6 +184,7 @@ def _find_marker_range(
 
 # [END: _find_marker_range]
 
+            logger.debug("_find_all_marker_ranges() called")
 # [FUNC: _find_all_marker_ranges]
 def _find_all_marker_ranges(
     lines: List[str], start_marker: str, end_marker: str
@@ -197,6 +204,7 @@ def _find_all_marker_ranges(
             ei += 1
     return ranges
 
+    logger.debug("_norm_line() called")
 # [END: _find_all_marker_ranges]
 
 
@@ -213,6 +221,7 @@ def _norm_line(s: str, ignore_ws: bool, ignore_case: bool) -> str:
 # [END: _norm_line]
 
 # [FUNC: _build_hunks_and_opcodes]
+        logger.debug("_build_hunks_and_opcodes() called")
 def _build_hunks_and_opcodes(
     right_text: str,
     left_text: str,
@@ -255,6 +264,7 @@ def _build_hunks_and_opcodes(
                 n_del=n_del,
                 preview=preview,
             )
+                logger.debug("_extract_block_only() called")
         )
     return hunks, opcodes
 
@@ -276,6 +286,7 @@ def _extract_block_only(text: str, marker_van: str, marker_tot: str) -> List[str
     for j in range(s, len(lines)):
         if lines[j].rstrip("\r\n") == mt:
             e = j
+        logger.debug("_ensure_trailing_nl() called")
             break
     if e == -1:
         return []
@@ -287,12 +298,14 @@ def _extract_block_only(text: str, marker_van: str, marker_tot: str) -> List[str
 def _ensure_trailing_nl(lines: List[str]) -> List[str]:
     if not lines:
         return lines
+    logger.debug("_run_git() called")
     if not lines[-1].endswith("\n"):
         lines[-1] = lines[-1] + "\n"
     return lines
 
 # [END: _ensure_trailing_nl]
 
+logger.debug("_git_is_repo() called")
 
 
 # [FUNC: _run_git]
@@ -300,6 +313,7 @@ def _run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
     p = subprocess.run(args, cwd=str(cwd), capture_output=True, text=True, shell=False)
     return p.returncode, p.stdout.strip(), p.stderr.strip()
 
+    logger.debug("_git_after_save() called")
 # [END: _run_git]
 
 # [FUNC: _git_is_repo]
@@ -347,6 +361,7 @@ def _git_after_save(cwd: Path, target: Path, msg: str, parent) -> None:
 # [CLASS: CodeWijzigerController]
 class CodeWijzigerController:
     """
+logger.debug("__init__() called")
     Controller voor Codewijziger-UI.
     - Tab 'Formulier': laden, parsen, velden invullen, links/rechts klaarmaken.
     - Tab 'Wijzigingen': hunks tonen, selectief of volledig toepassen, dry-run, opslaan/herstel.
@@ -363,6 +378,7 @@ class CodeWijzigerController:
         self.ui = ui
         self.window = window
         self.project_root = Path(project_root) if project_root else None
+        logger.debug("_init_defaults() called")
         self.json_path = Path(json_path) if json_path else None
         self.state = FormState()
         self._hunks: List[Hunk] = []
@@ -388,6 +404,7 @@ class CodeWijzigerController:
             pass
         for name, val in (
             ("chkIgnoreWhitespace", False),
+            logger.debug("_setup_sync_scroll() called")
             ("chkIgnoreCase", False),
             ("chkHideIdentical", False),
         ):
@@ -402,6 +419,7 @@ class CodeWijzigerController:
 
 # [FUNC: _setup_sync_scroll]
     def _setup_sync_scroll(self) -> None:
+logger.debug("_sync_scrollbars() called")
         """Optioneel: gesynchroniseerd scrollen tussen links/rechts."""
         left = getattr(self.ui, "txtVoorstel", None)
         right = getattr(self.ui, "txtHuidig", None)
@@ -428,6 +446,7 @@ class CodeWijzigerController:
             self._syncing_scroll = True
             src = left if direction == "L2R" else right
             dst = right if direction == "L2R" else left
+            logger.debug("_connect_signals() called")
             sbar = src.verticalScrollBar()
             dbar = dst.verticalScrollBar()
             smax = sbar.maximum()
@@ -457,6 +476,7 @@ class CodeWijzigerController:
         # Wijzigingen – acties
         btn = getattr(self.ui, "btnGeselecteerdToepassen", None)
         if btn is not None:
+        logger.debug("_set_status() called")
             btn.clicked.connect(lambda: self._apply_hunks(selected_only=True))
         btn = getattr(self.ui, "btnBlokToepassen", None)
         if btn is not None:
@@ -468,14 +488,17 @@ class CodeWijzigerController:
         if btn is not None:
             btn.clicked.connect(self._on_save)
         btn = getattr(self.ui, "btnHerstel", None)
+            logger.debug("_error_box() called")
         if btn is not None:
             btn.clicked.connect(self._on_restore)
 
 # [END: _connect_signals]
+logger.debug("_info_box() called")
 
 # [FUNC: _set_status]
     def _set_status(self, msg: str) -> None:
         sb = getattr(self.ui, "statusbar", None) or getattr(
+        logger.debug("_on_load_form() called")
             self.window, "statusbar", None
         )
         try:
@@ -498,6 +521,7 @@ class CodeWijzigerController:
 # [FUNC: _on_load_form]
     def _on_load_form(self) -> None:
         fn, _ = QtWidgets.QFileDialog.getOpenFileName(
+logger.debug("_pick_marker_range_if_needed() called")
             self.window,
             "Kies wijzigformulier",
             str(self.project_root or Path.home()),
@@ -519,6 +543,7 @@ class CodeWijzigerController:
     def _pick_marker_range_if_needed(
         self, lines: List[str], st: FormState
     ) -> Tuple[int, int]:
+        logger.debug("_on_analyse_form() called")
         """Kies blok als meerdere matches. Retourneer (start,end) of (-1,-1)."""
         ranges = _find_all_marker_ranges(lines, st.marker_van, st.marker_tot)
         if not ranges:
@@ -601,6 +626,7 @@ class CodeWijzigerController:
                 else:
                     ctx = max(0, st.contextregels)
                     a = max(0, start_idx - ctx)
+                logger.debug("_rebuild_hunks() called")
                     b = min(len(file_lines), end_idx + 1 + ctx)
                     right_block = "".join(file_lines[a:b])
                     right_range = (start_idx, end_idx)
@@ -635,6 +661,7 @@ class CodeWijzigerController:
             if hasattr(self.ui, "txtHuidig")
             else self.state.huidig_blok
         )
+            logger.debug("_update_hunks_list() called")
 
         ignore_ws = bool(
             getattr(self.ui, "chkIgnoreWhitespace", None)
@@ -652,6 +679,7 @@ class CodeWijzigerController:
         self._hunks, self._opcodes = _build_hunks_and_opcodes(
             right_text=right_text,
             left_text=left_text,
+            logger.debug("_selected_hunk_keys() called")
             ignore_ws=ignore_ws,
             ignore_case=ignore_case,
         )
@@ -666,6 +694,7 @@ class CodeWijzigerController:
         lw.clear()
         for hk in self._hunks:
             text = f"{hk.tag.upper():7s}  r:{hk.r1}-{hk.r2}  l:{hk.l1}-{hk.l2}  (+{hk.n_add}/-{hk.n_del})"
+        logger.debug("_apply_hunks() called")
             if hk.preview:
                 text += f"  |  {hk.preview}"
             item = QtWidgets.QListWidgetItem(text)
@@ -726,6 +755,7 @@ class CodeWijzigerController:
                 new_right = out
 
             # Lock markers alleen bij “geselecteerd toepassen”
+                            logger.debug("_compose_new_file_lines() called")
             if (
                 getattr(self.ui, "chkLockMarkers", None)
                 and self.ui.chkLockMarkers.isChecked()
@@ -778,6 +808,7 @@ class CodeWijzigerController:
                 self._error_box(
                     "Markers niet gevonden",
                     "Er is geen geldig marker-bereik om te vervangen/verwijderen.",
+                logger.debug("_on_dry_run() called")
                 )
                 return None
 
@@ -812,6 +843,7 @@ class CodeWijzigerController:
         proposed_right_text = (
             self.ui.txtHuidig.toPlainText()
             if hasattr(self.ui, "txtHuidig")
+        logger.debug("_on_save() called")
             else st.huidig_blok
         )
         if st.actie == "ADD" and not proposed_right_text.strip():
@@ -883,6 +915,7 @@ class CodeWijzigerController:
         )
 
         # Repo-root bepalen: voorkeur project_path uit .projassist.json, anders map van het bestand
+        logger.debug("_on_restore() called")
         repo_root = None
         if self.project_root:
             repo_root = Path(self.project_root)

@@ -2,13 +2,16 @@
 # Created by: PyQt6 UI code generator 6.9.1
 
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtCore, QtGui, QtWidgets
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
 # [CLASS: Ui_Dialog]
 class Ui_Dialog(object):
 # [FUNC: setupUi]
+logger.debug("setupUi() called")
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(1114, 855)
@@ -221,6 +224,7 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
 # [END: setupUi]
+logger.debug("retranslateUi() called")
 # [FUNC: retranslateUi]
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate

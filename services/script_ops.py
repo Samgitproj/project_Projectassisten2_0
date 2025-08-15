@@ -1,9 +1,11 @@
 # [SECTION: Imports]
+import logging
 from pathlib import Path
 from typing import Optional
 
 
 from services.json_store import load_json, save_json
+logger = logging.getLogger(__name__)
 
 
 
@@ -12,6 +14,7 @@ from services.json_store import load_json, save_json
 def _to_rel_posix(json_path: Path | str, any_path: Path | str) -> str:
     """
     Converteer een absoluut/relatief pad naar een RELATIEF POSIX-pad t.o.v. projectroot (map van .projassist.json).
+logger.debug("_to_rel_posix() called")
     """
     jp = Path(json_path)
     root = jp.parent.resolve()
@@ -35,6 +38,7 @@ def register_existing_script(
 ) -> dict:
     """
     Registreer een bestaand script in .projassist.json onder key 'scripts'.
+logger.debug("register_existing_script() called")
     Retourneert de (nieuwe of bestaande) entry.
     """
     json_path = Path(projassist_json)
@@ -67,6 +71,7 @@ def create_new_script(
     template: Optional[str] = None,
 ) -> dict:
     """
+logger.debug("create_new_script() called")
     Maak nieuw .py-bestand aan in dir_path (aanmaken indien nodig) en registreer het.
     Retourneert de aangemaakte entry.
     """
@@ -100,6 +105,7 @@ def remove_script(
     delete_from_disk: bool = False,
 ) -> bool:
     """
+logger.debug("remove_script() called")
     Verwijder script uit .projassist.json (en optioneel van schijf).
     - script_path mag absoluut of relatief zijn.
     Retourneert True als JSON gewijzigd werd.
@@ -129,6 +135,7 @@ def remove_script(
     return changed
 
 # [END: remove_script]
+logger.debug("_build_github_blob_url() called")
 
 
 
@@ -147,6 +154,7 @@ def _build_github_blob_url(repo_url: str, rel_posix: str, branch: str = "main") 
 def set_github_url_for_script(
     projassist_json: str | Path,
     script_path: str | Path,
+    logger.debug("set_github_url_for_script() called")
     branch: str = "main",
 ) -> str | None:
     """

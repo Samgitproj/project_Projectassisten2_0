@@ -1,4 +1,5 @@
 # [SECTION: Imports]
+import logging
 from pathlib import Path
 from PyQt6 import QtWidgets
 
@@ -6,6 +7,7 @@ from PyQt6 import QtWidgets
 # [END: Imports]
 # [FUNC: test_replace_happy]
 def test_replace_happy(qtbot, ui_env, tmp_target):
+logger.debug("test_replace_happy() called")
     ui, win, ctrl = ui_env
     form = f"""\
 Bestand: {tmp_target}
@@ -34,6 +36,7 @@ def process_items(items: Iterable[int]) -> List[int]:
 # [END: test_replace_happy]
 
 # [FUNC: test_add_happy]
+logger.debug("test_add_happy() called")
 def test_add_happy(qtbot, ui_env, tmp_target):
     ui, win, ctrl = ui_env
     form = f"""\
@@ -53,6 +56,7 @@ def hello_world() -> str:
 
 # [END: test_add_happy]
 
+logger.debug("test_delete_happy() called")
 # [FUNC: test_delete_happy]
 def test_delete_happy(qtbot, ui_env, tmp_target):
     ui, win, ctrl = ui_env
@@ -71,6 +75,7 @@ Voorstel-blok:
     assert ui.txtVoorstel.toPlainText().strip() == ""
 
 # [END: test_delete_happy]
+logger.debug("test_toggles_rebuild_hunks() called")
 
 # [FUNC: test_toggles_rebuild_hunks]
 def test_toggles_rebuild_hunks(qtbot, ui_env, tmp_target):
@@ -90,6 +95,7 @@ def process_items(items: Iterable[int]) -> List[int]:
     return [x for x in base if x % 3 != 0]
 """
     from tests.conftest import paste_form_and_analyse
+logger = logging.getLogger(__name__)
 
     paste_form_and_analyse(qtbot, ui, form)
     n1 = ui.listHunks.count()

@@ -7,13 +7,16 @@
 
 
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtCore, QtGui, QtWidgets
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
 # [CLASS: Ui_OverigPanel]
 class Ui_OverigPanel(object):
 # [FUNC: setupUi]
+logger.debug("setupUi() called")
     def setupUi(self, OverigPanel):
         OverigPanel.setObjectName("OverigPanel")
         self.vMain = QtWidgets.QVBoxLayout(OverigPanel)
@@ -81,6 +84,7 @@ class Ui_OverigPanel(object):
         QtCore.QMetaObject.connectSlotsByName(OverigPanel)
 
 # [END: setupUi]
+logger.debug("retranslateUi() called")
 # [FUNC: retranslateUi]
     def retranslateUi(self, OverigPanel):
         _translate = QtCore.QCoreApplication.translate

@@ -1,4 +1,5 @@
 # [SECTION: Imports]
+import logging
 import os
 import shutil
 import subprocess
@@ -7,6 +8,7 @@ from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
@@ -22,6 +24,7 @@ COPYFILES_PATH = (
 
 # [FUNC: create_github_repo]
 def create_github_repo(project_name: str) -> str | None:
+logger.debug("create_github_repo() called")
     """Maak (optioneel) een GitHub-repo. Slaat over als GITHUB_TOKEN ontbreekt."""
     if not GITHUB_TOKEN:
         print("INFO: GITHUB_TOKEN ontbreekt - GitHub stap wordt overgeslagen.")
@@ -48,6 +51,7 @@ def create_github_repo(project_name: str) -> str | None:
 
 
 
+logger.debug("git_init_and_push() called")
 # [FUNC: git_init_and_push]
 def git_init_and_push(project_path: str, github_repo_url: str):
     try:
@@ -77,6 +81,7 @@ def git_init_and_push(project_path: str, github_repo_url: str):
 
 # [FUNC: _write_vscode]
 def _write_vscode(project_path: str, project_name: str, venv_root: str):
+logger.debug("_write_vscode() called")
     """
     Schrijft .vscode/settings.json en tasks.json (BAT-first + UI2PY-tool + Start_Main).
     """
@@ -149,6 +154,7 @@ def _write_vscode(project_path: str, project_name: str, venv_root: str):
 
 
 # [FUNC: create_project]
+logger.debug("create_project() called")
 def create_project(base_folder: str, project_name: str, readme_text: str):
     """
     Maakt een PyQt-project in OneDrive en zet een venv op in C:\\virt omgeving\\<project>\\venv.

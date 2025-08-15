@@ -1,7 +1,9 @@
 # [SECTION: Imports]
+import logging
 import sys
 import subprocess
 from pathlib import Path
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
@@ -19,6 +21,7 @@ def build_exe(
     - output_dir: doelmap voor de .exe
     - entry_script: bv. 'main.py'
     Retourneert (ok, gecombineerd stdout/stderr).
+logger.debug("build_exe() called")
     """
     proj = Path(project_path).resolve()
     out = Path(output_dir).resolve()

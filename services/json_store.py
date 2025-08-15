@@ -1,8 +1,10 @@
 # [SECTION: Imports]
+import logging
 import json
 import os
 import tempfile
 from pathlib import Path
+logger = logging.getLogger(__name__)
 
 
 
@@ -11,6 +13,7 @@ from pathlib import Path
 def load_json(json_path: str | Path) -> dict:
     """
     Laad JSON-bestand. Bestaat het bestand niet of is het onleesbaar → {}.
+logger.debug("load_json() called")
     """
     p = Path(json_path)
     if not p.exists():
@@ -29,6 +32,7 @@ def load_json(json_path: str | Path) -> dict:
 # [FUNC: save_json]
 def save_json(json_path: str | Path, data: dict) -> None:
     """
+logger.debug("save_json() called")
     Schrijf JSON atomisch (tempfile + replace), UTF-8, met nette inspringing.
     """
     p = Path(json_path)

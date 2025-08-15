@@ -7,13 +7,16 @@
 
 
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtCore, QtGui, QtWidgets
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
 # [CLASS: Ui_DiffOptionsPanel]
 class Ui_DiffOptionsPanel(object):
 # [FUNC: setupUi]
+logger.debug("setupUi() called")
     def setupUi(self, DiffOptionsPanel):
         DiffOptionsPanel.setObjectName("DiffOptionsPanel")
         self.vMain = QtWidgets.QVBoxLayout(DiffOptionsPanel)
@@ -42,6 +45,7 @@ class Ui_DiffOptionsPanel(object):
         QtCore.QMetaObject.connectSlotsByName(DiffOptionsPanel)
 
 # [END: setupUi]
+logger.debug("retranslateUi() called")
 # [FUNC: retranslateUi]
     def retranslateUi(self, DiffOptionsPanel):
         _translate = QtCore.QCoreApplication.translate

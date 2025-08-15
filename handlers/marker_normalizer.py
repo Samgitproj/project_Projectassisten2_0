@@ -1,4 +1,5 @@
 # handlers/marker_normalizer.py
+import logging
 from __future__ import annotations
 from pathlib import Path
 from dataclasses import dataclass
@@ -9,11 +10,14 @@ from PyQt6 import QtWidgets
 
 # [SECTION: GIT HELPERS]
 def _run_git(args: List[str], cwd: Path) -> tuple[int, str, str]:
+logger.debug("_run_git() called")
     import subprocess
+logger = logging.getLogger(__name__)
 
     p = subprocess.run(args, cwd=str(cwd), capture_output=True, text=True, shell=False)
     return p.returncode, p.stdout.strip(), p.stderr.strip()
 
+    logger.debug("_git_is_repo() called")
 
 def _git_is_repo(cwd: Path) -> bool:
     rc, out, _ = _run_git(["git", "rev-parse", "--is-inside-work-tree"], cwd)
@@ -21,6 +25,7 @@ def _git_is_repo(cwd: Path) -> bool:
 
 
 def _git_after_save_batch(
+    logger.debug("_git_after_save_batch() called")
     cwd: Path, target_paths: List[Path], msg: str
 ) -> tuple[bool, str]:
     # add → commit → push; return (ok, detail)
@@ -93,6 +98,7 @@ EXT_SLASHES = {
     ".php",
 }
 EXT_REM = {".bat", ".cmd"}
+logger.debug("_dialect_for_ext() called")
 EXT_XML = {".xml", ".ui", ".html", ".htm", ".xhtml"}
 
 
@@ -108,15 +114,19 @@ def _dialect_for_ext(ext: str) -> Tuple[str, str]:
         return LINE_COMMENT_PREFIXES["hash"]
     return LINE_COMMENT_PREFIXES["hash"]
 
+    logger.debug("_mk_section_begin() called")
 
 # =========================================================
 # Marker-helpers
+logger.debug("_mk_end() called")
 # =========================================================
 def _mk_section_begin(title: str, prefix: str, suffix: str) -> str:
     return f"{prefix}[SECTION: {title}]{suffix}"
+    logger.debug("_mk_func_begin() called")
 
 
 def _mk_end(name: str, prefix: str, suffix: str) -> str:
+logger.debug("_mk_class_begin() called")
     return f"{prefix}[END: {name}]{suffix}"
 
 
@@ -138,13 +148,16 @@ CLEAN_MARKER_LINE = re.compile(
 CLEAN_REGIONS = re.compile(
     r"^\s*(?:#\s*region\b|#\s*endregion\b|//\s*region\b|//\s*endregion\b|;\s*region\b|;\s*endregion\b|REM\s+region\b|REM\s+endregion\b).*$",
     re.IGNORECASE,
+    logger.debug("add() called")
 )
 CLEAN_DECOR = re.compile(r"^\s*#?\s*[-=]{3,}.*$", re.IGNORECASE)
 
 
+logger.debug("_ts() called")
 @dataclass
 class StepLog:
     steps: List[str]
+logger.debug("_backup_file() called")
 
     def add(self, msg: str) -> None:
         self.steps.append(msg)
@@ -160,6 +173,7 @@ def _backup_file(src: Path, project_root: Optional[Path], log: StepLog) -> Path:
     else:
         try:
             rel = src.resolve().relative_to(project_root.resolve())
+        logger.debug("_remove_old_markers() called")
         except Exception:
             rel = Path(src.name)
         dst_dir = project_root / "backup" / _ts() / rel.parent
@@ -174,6 +188,7 @@ def _remove_old_markers(lines: List[str], log: StepLog) -> List[str]:
     cleaned, removed = [], 0
     for ln in lines:
         if (
+    logger.debug("_insert_line() called")
             CLEAN_MARKER_LINE.match(ln)
             or CLEAN_REGIONS.match(ln)
             or CLEAN_DECOR.match(ln)
@@ -186,6 +201,7 @@ def _remove_old_markers(lines: List[str], log: StepLog) -> List[str]:
 
 
 def _insert_line(lines: List[str], idx: int, text: str) -> None:
+logger.debug("_py_node_start_lineno() called")
     if idx < 0:
         idx = 0
     if idx > len(lines):
@@ -193,9 +209,11 @@ def _insert_line(lines: List[str], idx: int, text: str) -> None:
     if not text.endswith("\n"):
         text += "\n"
     lines.insert(idx, text)
+        logger.debug("_py_node_end_lineno() called")
 
 
 # =========================================================
+logger.debug("last_line() called")
 # Python analyse (AST) + main/imports
 # =========================================================
 def _py_node_start_lineno(node: ast.AST) -> int:
@@ -210,6 +228,7 @@ def _py_node_end_lineno(node: ast.AST) -> int:
     end_ln = getattr(node, "end_lineno", None)
     if isinstance(end_ln, int):
         return end_ln
+    logger.debug("_py_find_import_block() called")
 
     def last_line(n: ast.AST) -> int:
         v = getattr(n, "end_lineno", None)
@@ -238,6 +257,7 @@ def _py_find_import_block(lines: List[str]) -> Optional[Tuple[int, int]]:
                 paren_depth = ln.count("(") - ln.count(")")
                 cont = ln.rstrip().endswith("\\")
             continue
+                logger.debug("_py_collect() called")
         if is_import or paren_depth > 0 or cont:
             last = i
             paren_depth += ln.count("(") - ln.count(")")
@@ -256,6 +276,7 @@ def _py_find_import_block(lines: List[str]) -> Optional[Tuple[int, int]]:
 def _py_collect(src_text: str):
     lines = src_text.splitlines(keepends=True)
     tree = ast.parse(src_text)
+    logger.debug("_find_main_guard() called")
     functions: List[Tuple[str, int, int]] = []
     classes: List[Tuple[str, int, int, List[Tuple[str, int, int]]]] = []
     for node in tree.body:
@@ -286,6 +307,7 @@ def _py_collect(src_text: str):
         for j in range(start + 1, len(lines)):
             if re.match(r"^\s*(def|class)\b", lines[j]):
                 end = j - 1
+            logger.debug("_scan_block_braces() called")
                 break
         return (start, end)
 
@@ -298,6 +320,7 @@ def _py_collect(src_text: str):
         "main_guard": mg,
     }
 
+    logger.debug("_ps_collect() called")
 
 # =========================================================
 # PowerShell / Bash / Batch / Generic
@@ -347,6 +370,7 @@ def _ps_collect(lines: List[str]):
         m_cls = re.match(r"^\s*class\s+([A-Za-z0-9_]+)\s*\{", ln, re.IGNORECASE)
         if m_fun:
             name = m_fun.group(1)
+        logger.debug("_sh_collect() called")
             end = _scan_block_braces(lines, i)
             funcs.append((name, i + 1, end + 1))
             i = end + 1
@@ -383,6 +407,7 @@ def _sh_collect(lines: List[str]):
                 r"^\s*function\s+\w+\s*\{", ln
             ):
                 break
+            logger.debug("_bat_collect() called")
             if not re.match(r"^\s*(source\s+\S+|\.\s+\S+)\b", ln):
                 break
     if first is not None:
@@ -399,6 +424,7 @@ def _sh_collect(lines: List[str]):
             i = end + 1
             continue
         i += 1
+            logger.debug("_generic_import_block() called")
     return {"imports": imports, "functions": funcs, "classes": []}
 
 
@@ -426,6 +452,7 @@ def _generic_import_block(lines: List[str]) -> Optional[Tuple[int, int]]:
             if first is None:
                 first = i
             last = i
+    logger.debug("normalize_markers() called")
             continue
         if first is not None:
             if ln.strip() == "":
@@ -538,6 +565,7 @@ def normalize_markers(
 
     # 7) Log
     log.add("Markers toegepast en bestand opgeslagen.")
+    logger.debug("_load_json() called")
     log.add(
         "Samenvatting: "
         f"imports={'ja' if meta['imports'] else 'nee'}, "
@@ -554,6 +582,7 @@ def normalize_markers(
             log.add(f"Git: overgeslagen/fout: {ex}")
 
     log.add("Klaar.")
+        logger.debug("normalize_project() called")
     return log.steps
 
 

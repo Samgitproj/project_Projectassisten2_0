@@ -1,10 +1,12 @@
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtWidgets
 
 
 # [END: Imports]
 # [FUNC: test_sync_scroll]
 def test_sync_scroll(qtbot, ui_env, tmp_target):
+logger.debug("test_sync_scroll() called")
     ui, win, ctrl = ui_env
     # Maak een lang voorstel zodat scrollbalken ontstaan
     long_left = (
@@ -22,6 +24,7 @@ Voorstel-blok:
 {long_left}
 """
     from tests.conftest import paste_form_and_analyse
+logger = logging.getLogger(__name__)
 
     paste_form_and_analyse(qtbot, ui, form)
 

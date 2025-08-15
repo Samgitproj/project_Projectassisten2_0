@@ -7,13 +7,16 @@
 
 
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtCore, QtGui, QtWidgets
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
 # [CLASS: Ui_MainWindow]
 class Ui_MainWindow(object):
 # [FUNC: setupUi]
+logger.debug("setupUi() called")
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setMinimumSize(QtCore.QSize(700, 500))
@@ -74,6 +77,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 # [END: setupUi]
+logger.debug("retranslateUi() called")
 # [FUNC: retranslateUi]
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

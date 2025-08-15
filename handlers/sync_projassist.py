@@ -1,4 +1,5 @@
 # [SECTION: Imports]
+import logging
 from __future__ import annotations
 
 import json
@@ -8,23 +9,27 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from PyQt6 import QtWidgets
+logger = logging.getLogger(__name__)
 
 
 
 # [END: Imports]
 # [FUNC: _run_git]
+logger.debug("_run_git() called")
 def _run_git(args: List[str], cwd: Path) -> tuple[int, str, str]:
     p = subprocess.run(args, cwd=str(cwd), capture_output=True, text=True, shell=False)
     return p.returncode, p.stdout.strip(), p.stderr.strip()
 
 # [END: _run_git]
 
+logger.debug("_git_is_repo() called")
 # [FUNC: _git_is_repo]
 def _git_is_repo(cwd: Path) -> bool:
     rc, out, _ = _run_git(["git", "rev-parse", "--is-inside-work-tree"], cwd)
     return rc == 0 and (out.lower() == "true")
 
 # [END: _git_is_repo]
+logger.debug("_git_current_branch() called")
 
 # [FUNC: _git_current_branch]
 def _git_current_branch(cwd: Path) -> Optional[str]:
@@ -32,6 +37,7 @@ def _git_current_branch(cwd: Path) -> Optional[str]:
     return out if rc == 0 and out else None
 
 # [END: _git_current_branch]
+    logger.debug("_git_after_save() called")
 
 # [FUNC: _git_after_save]
 def _git_after_save(cwd: Path, target_paths: List[Path], msg: str, parent) -> None:
@@ -63,6 +69,7 @@ def _git_after_save(cwd: Path, target_paths: List[Path], msg: str, parent) -> No
         )
 
 # [END: _git_after_save]
+logger.debug("_load_json() called")
 
 
 
@@ -73,6 +80,7 @@ def _load_json(path: Path) -> Dict[str, Any]:
     except FileNotFoundError:
         return {}
     except Exception:
+        logger.debug("_save_json() called")
         return {}
 
 # [END: _load_json]
@@ -80,6 +88,7 @@ def _load_json(path: Path) -> Dict[str, Any]:
 # [FUNC: _save_json]
 def _save_json(path: Path, data: Dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    logger.debug("_scan_scripts() called")
 
 # [END: _save_json]
 
@@ -109,6 +118,7 @@ def _scan_scripts(root: Path, exts: tuple[str, ...] = (".py", ".ui")) -> List[st
 
 
 # [FUNC: _build_github_url_map]
+            logger.debug("_build_github_url_map() called")
 def _build_github_url_map(
     root: Path, scripts: List[str], cfg: Dict[str, Any]
 ) -> Dict[str, str]:
@@ -135,6 +145,7 @@ def _build_github_url_map(
 
 
 
+logger.debug("run() called")
 # [CLASS: SyncProjassistService]
 @dataclass
 class SyncProjassistService:

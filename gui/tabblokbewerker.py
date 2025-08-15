@@ -7,13 +7,16 @@
 
 
 # [SECTION: Imports]
+import logging
 from PyQt6 import QtCore, QtGui, QtWidgets
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
 # [CLASS: Ui_BlokbewerkerPanel]
 class Ui_BlokbewerkerPanel(object):
 # [FUNC: setupUi]
+logger.debug("setupUi() called")
     def setupUi(self, BlokbewerkerPanel):
         BlokbewerkerPanel.setObjectName("BlokbewerkerPanel")
         BlokbewerkerPanel.resize(1184, 852)
@@ -132,6 +135,7 @@ class Ui_BlokbewerkerPanel(object):
         QtCore.QMetaObject.connectSlotsByName(BlokbewerkerPanel)
 
 # [END: setupUi]
+logger.debug("retranslateUi() called")
 # [FUNC: retranslateUi]
     def retranslateUi(self, BlokbewerkerPanel):
         _translate = QtCore.QCoreApplication.translate

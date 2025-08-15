@@ -1,9 +1,11 @@
 # [SECTION: Imports]
+import logging
 from __future__ import annotations
 import os
 import sys
 from pathlib import Path
 from typing import Any, Optional
+logger = logging.getLogger(__name__)
 
 
 # [END: Imports]
@@ -33,17 +35,20 @@ class Timer:
     """Eenvoudige context manager om tijden te meten."""
 
 # [FUNC: __init__]
+logger.debug("__init__() called")
     def __init__(self, label: str = "elapsed"):
         self.label = label
         self.start: Optional[float] = None
         self.elapsed: Optional[float] = None
 
 # [END: __init__]
+logger.debug("__enter__() called")
 # [FUNC: __enter__]
     def __enter__(self):
         self.start = time.perf_counter()
         return self
 
+        logger.debug("__exit__() called")
 # [END: __enter__]
 # [FUNC: __exit__]
     def __exit__(self, exc_type, exc, tb):
@@ -59,6 +64,7 @@ class Timer:
 
 # [FUNC: slugify]
 def slugify(text: str) -> str:
+logger.debug("slugify() called")
     """Maak een eenvoudige slug."""
     text = re.sub(r"[^a-zA-Z0-9\-]+", "-", text.strip().lower())
     text = re.sub(r"-{2,}", "-", text).strip("-")
@@ -67,6 +73,7 @@ def slugify(text: str) -> str:
 # [END: slugify]
 
 # [FUNC: chunked]
+logger.debug("chunked() called")
 def chunked(it: Iterable[Any], size: int) -> Iterator[List[Any]]:
     """Itereer in chunks (voor diffs handig)."""
     buf: List[Any] = []
@@ -81,7 +88,10 @@ def chunked(it: Iterable[Any], size: int) -> Iterator[List[Any]]:
 # [END: chunked]
 
 # [FUNC: retry]
+logger.debug("deco() called")
+logger.debug("wrapper() called")
 def retry(
+logger.debug("retry() called")
     attempts: int = 2, delay: float = 0.1
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     """Decorator: simpele retry."""
@@ -107,6 +117,7 @@ def retry(
 
 # [FUNC: load_config]
 def load_config(path: Path) -> Dict[str, Any]:
+logger.debug("load_config() called")
     """
     Laadt JSON-config. Bestaat het bestand niet, dan wordt DEFAULT_CONFIG weggeschreven en retour.
     Let op: in deze docstring staan woorden als [FUNC: demo] maar niet als marker-regel.
@@ -123,6 +134,7 @@ def load_config(path: Path) -> Dict[str, Any]:
 
 # [END: load_config]
 
+logger.debug("save_config() called")
 
 
 # [FUNC: save_config]
@@ -133,6 +145,7 @@ def save_config(path: Path, data: Dict[str, Any]) -> None:
 # [END: save_config]
 
 
+    logger.debug("parse_kv_lines() called")
 
 # [FUNC: parse_kv_lines]
 def parse_kv_lines(lines: Iterable[str]) -> Dict[str, str]:
@@ -151,6 +164,7 @@ def parse_kv_lines(lines: Iterable[str]) -> Dict[str, str]:
             result[k] = v
     return result
 
+            logger.debug("process_items() called")
 # [END: parse_kv_lines]
 
 
@@ -167,6 +181,7 @@ def process_items(items: Iterable[int]) -> List[int]:
 # [END: process_items]
 
 
+    logger.debug("simulated_network_call() called")
 
 # [FUNC: simulated_network_call]
 @retry(attempts=2, delay=0.05)
@@ -184,6 +199,7 @@ def simulated_network_call(endpoint: str) -> Dict[str, Any]:
     # Geen echte netwerkcall: we geven alleen data terug
     return {"endpoint": endpoint, "ok": True, "ts": time.time()}
 
+        logger.debug("dangerous_op() called")
 # [END: simulated_network_call]
 
 
@@ -204,6 +220,7 @@ def dangerous_op(path: Path) -> str:
     finally:
         if fh:
             fh.close()
+        logger.debug("serialize() called")
 
 # [END: dangerous_op]
 
@@ -231,6 +248,7 @@ class Item:
 # Voorbeeld (bewust leeg gelaten):
 # def placeholder_new_feature():
 #     """Wordt later met ADD vervangen."""
+logger.debug("demo_run() called")
 #     pass
 APP_BUILD = "1.0.0"
 APP_AUTHOR = "Test User"

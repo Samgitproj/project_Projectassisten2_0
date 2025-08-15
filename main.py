@@ -1,5 +1,6 @@
 # main.py
 # [SECTION: Imports]
+import logging
 from __future__ import annotations
 
 import sys
@@ -25,6 +26,7 @@ from handlers.projassist_handlers import ProjAssistHandlers
 # [FUNC: _enable_high_dpi_safe]
 def _enable_high_dpi_safe() -> None:
     """Veilige High-DPI instellingen (alleen als attribuut bestaat)."""
+logger.debug("_enable_high_dpi_safe() called")
     try:
         attr = getattr(QtCore.Qt.ApplicationAttribute, "AA_EnableHighDpiScaling", None)
         if attr is not None:
@@ -47,10 +49,12 @@ def open_code_changer(
     """
     Opent de Codewijziger-GUI en koppelt de controller,
     zodat tab 'Formulier' meteen werkt.
+logger.debug("open_code_changer() called")
     """
     # Lazy imports om start-up licht te houden
     from gui.codewijziger import Ui_CodeWijzigerWindow
     from handlers.codewijziger_controller import CodeWijzigerController
+logger = logging.getLogger(__name__)
 
     win = QtWidgets.QMainWindow(parent_dialog)
     ui_cw = Ui_CodeWijzigerWindow()
@@ -74,6 +78,7 @@ def open_code_changer(
     win.activateWindow()
 
 # [END: open_code_changer]
+logger.debug("main() called")
 
 # [FUNC: main]
 def main() -> int:

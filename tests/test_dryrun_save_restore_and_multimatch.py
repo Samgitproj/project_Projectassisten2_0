@@ -1,4 +1,5 @@
 # [SECTION: Imports]
+import logging
 from pathlib import Path
 from PyQt6 import QtCore, QtWidgets
 
@@ -7,7 +8,9 @@ from PyQt6 import QtCore, QtWidgets
 # [FUNC: _auto_close_dryrun_dialog]
 def _auto_close_dryrun_dialog(qtbot):
     """Sluit de dry-run preview automatisch zodra hij opent."""
+logger.debug("_auto_close_dryrun_dialog() called")
 
+logger.debug("closer() called")
     def closer():
         for w in QtWidgets.QApplication.topLevelWidgets():
             if (
@@ -21,6 +24,7 @@ def _auto_close_dryrun_dialog(qtbot):
 # [END: _auto_close_dryrun_dialog]
 
 # [FUNC: test_dryrun_save_restore]
+logger.debug("test_dryrun_save_restore() called")
 def test_dryrun_save_restore(qtbot, ui_env, tmp_target, tmp_path):
     ui, win, ctrl = ui_env
     form = f"""\
@@ -65,8 +69,10 @@ def process_items(items: Iterable[int]) -> List[int]:
 
 # [END: test_dryrun_save_restore]
 
+logger.debug("test_multi_match_choose_second() called")
 # [FUNC: test_multi_match_choose_second]
 def test_multi_match_choose_second(qtbot, ui_env, tmp_target_multimatch, monkeypatch):
+logger.debug("fake_get_item() called")
     ui, win, ctrl = ui_env
 
     # Monkeypatch: kies automatisch het 2e gevonden blok in de keuzelijst
@@ -87,6 +93,7 @@ def process_items(items: Iterable[int]) -> List[int]:
     return [x+1 for x in items]
 """
     from tests.conftest import paste_form_and_analyse
+logger = logging.getLogger(__name__)
 
     paste_form_and_analyse(qtbot, ui, form)
 

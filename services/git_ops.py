@@ -1,6 +1,8 @@
 # [SECTION: Imports]
+import logging
 import subprocess
 from pathlib import Path
+logger = logging.getLogger(__name__)
 
 
 
@@ -10,6 +12,7 @@ def _run_git(args: list[str], cwd: str | Path) -> tuple[bool, str]:
     """
     Voer een git-commando uit in `cwd`.
     Retourneert (ok, gecombineerd stdout/stderr).
+logger.debug("_run_git() called")
     """
     try:
         result = subprocess.run(
@@ -31,6 +34,7 @@ def _run_git(args: list[str], cwd: str | Path) -> tuple[bool, str]:
 
 
 # [FUNC: is_repo]
+logger.debug("is_repo() called")
 def is_repo(folder: str | Path) -> bool:
     """True als `folder` zich binnen een git repository bevindt."""
     ok, _ = _run_git(["rev-parse", "--is-inside-work-tree"], cwd=folder)
@@ -42,6 +46,7 @@ def is_repo(folder: str | Path) -> bool:
 
 # [FUNC: add]
 def add(paths: list[str | Path], cwd: str | Path) -> tuple[bool, str]:
+logger.debug("add() called")
     """
     `git add -- <paths>`
     """
@@ -54,6 +59,7 @@ def add(paths: list[str | Path], cwd: str | Path) -> tuple[bool, str]:
 
 # [FUNC: commit]
 def commit(message: str, cwd: str | Path) -> tuple[bool, str]:
+logger.debug("commit() called")
     """
     `git commit -m <message>`
     Geeft (True, "Nothing to commit") terug als er niets te committen is.
@@ -65,6 +71,7 @@ def commit(message: str, cwd: str | Path) -> tuple[bool, str]:
 
 # [END: commit]
 
+logger.debug("_current_branch() called")
 
 
 # [FUNC: _current_branch]
@@ -78,6 +85,7 @@ def _current_branch(cwd: str | Path) -> tuple[bool, str]:
 
 
 # [FUNC: push]
+    logger.debug("push() called")
 def push(
     cwd: str | Path, remote: str = "origin", branch: str | None = None
 ) -> tuple[bool, str]:
@@ -96,6 +104,7 @@ def push(
 
 
 # [FUNC: rm]
+        logger.debug("rm() called")
 def rm(
     paths: list[str | Path], cwd: str | Path, cached: bool = False
 ) -> tuple[bool, str]:
