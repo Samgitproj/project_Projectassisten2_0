@@ -53,26 +53,6 @@ class Timer:
 # [END: CLASS: Timer]
 
 
-# [CLASS: Greeter]
-class Greeter:
-    """Voorbeeldklasse met instance-, class- en staticmethod."""
-
-    def __init__(self, name: str):
-        self.name = name
-
-    def greet(self) -> str:
-        return f"Hallo, {self.name}!"
-
-    @classmethod
-    def default(cls) -> "Greeter":
-        return cls("Wereld")
-
-    @staticmethod
-    def shout(text: str) -> str:
-        return text.upper()
-
-
-# [END: CLASS: Greeter]
 
 
 # [SECTION: UTILS]
