@@ -466,7 +466,7 @@ def normalize_markers(
     _backup_file(file_path, project_root, log)
 
     # 2) Clean
-    orig_text = file_path.read_text(encoding="utf-8", errors="replace")
+    orig_text = file_path.read_text(encoding="utf-8-sig", errors="replace")  # strip BOM
     lines = orig_text.splitlines(keepends=True)
     lines = _remove_old_markers(lines, log)
 
