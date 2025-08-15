@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import Optional
 from PyQt6 import QtWidgets, QtCore
 import os, shutil
-
+from handlers.sync_projassist import SyncProjassistService
+from handlers.marker_normalizer import normalize_project
 
 # [END: Imports]
 APP_NAME = "Projectassisten2_0"
@@ -35,6 +36,10 @@ class ProjAssistHandlers:
             w = getattr(self.ui, name, None)
             if w:
                 w.setText("—")
+        # NIEUW: label voor geselecteerd script resetten
+        w = getattr(self.ui, "lblProjectScipt", None)
+        if w:
+            w.setText("—")
         # nieuwe line-edits leegmaken
         for name in ("lineLoadEditscript", "lineEditDeleteScipt"):
             w = getattr(self.ui, name, None)
@@ -87,6 +92,10 @@ class ProjAssistHandlers:
 
         # NIEUW: markers normaliseren
         hook("btnSetMarkers", self._set_markers_clicked)
+        hook("btnMarkProject", self._on_mark_project_clicked)
+
+        # NIEUW: project scripts syncen met .projassist.json
+        hook("btnSyncProjassist", self._on_sync_projassist)
 
 # [END: _connect_signals]
 
@@ -124,6 +133,11 @@ class ProjAssistHandlers:
         if hasattr(self.ui, "lblProjectName1"):
             self.ui.lblProjectName1.setText(str(name))
 
+        # NIEUW: bij nieuw project nog geen script gekozen → label resetten
+        w = getattr(self.ui, "lblProjectScipt", None)
+        if w:
+            w.setText("—")
+
 # [END: _load_json]
 
 # [FUNC: _browse_load_script_clicked]
@@ -147,10 +161,14 @@ class ProjAssistHandlers:
     def _load_script_to_editor_clicked(self):
         le = getattr(self.ui, "lineLoadEditscript", None)
         path = Path(le.text().strip()) if le else None
+        label = getattr(self.ui, "lblProjectScipt", None)
         if not path or not path.exists():
             QtWidgets.QMessageBox.information(
                 self.parent, "Laden", "Geen geldig script geselecteerd."
             )
+            # NIEUW: bij fout ook label leegmaken
+            if label:
+                label.setText("—")
             return
         try:
             text = path.read_text(encoding="utf-8", errors="replace")
@@ -158,6 +176,9 @@ class ProjAssistHandlers:
             text = f"[Kon bestand niet lezen]\n{path}\n\n{ex}"
         if hasattr(self.ui, "plainTextScriptEditor"):
             self.ui.plainTextScriptEditor.setPlainText(text)
+        # NIEUW: na succesvol laden → bestandsnaam tonen in het label
+        if label:
+            label.setText(path.name)
 
 # [END: _load_script_to_editor_clicked]
 
@@ -250,7 +271,7 @@ class ProjAssistHandlers:
             )
             return
 
-        # Veiligheidsnet: project_root is nodig voor backup‑pad
+        # Veiligheidsnet: project_root is nodig voor backup-pad
         project_root = self.project_root
 
         # Voer normalisatie uit
@@ -262,12 +283,46 @@ class ProjAssistHandlers:
                 project_root=project_root,
                 git_callback=lambda paths, msg: self._git_record(paths, msg),
             )
-            # Toon pop‑up met de stappen
+            # Toon pop-up met de stappen
             QtWidgets.QMessageBox.information(self.parent, "Markers", "\n".join(logs))
         except Exception as ex:
             QtWidgets.QMessageBox.critical(self.parent, "Markers", f"Fout:\n{ex}")
 
 # [END: _set_markers_clicked]
+
+# [FUNC: _on_sync_projassist]
+    def _on_sync_projassist(self):
+        if not self.project_root or not self.json_path:
+            QtWidgets.QMessageBox.information(
+                self.parent, "Sync", "Laad eerst een .projassist.json (project)."
+            )
+            return
+
+        svc = SyncProjassistService(
+            project_root=self.project_root,
+            json_path=self.json_path,
+            parent_window=self.parent,  # <-- was self.window
+        )
+        svc.run()
+
+# [END: _on_sync_projassist]
+
+# [FUNC: _on_mark_project_clicked]
+    def _on_mark_project_clicked(self):
+        if not self.project_root or not self.json_path:
+            QtWidgets.QMessageBox.information(
+                self.parent, "Markers", "Laad eerst een .projassist.json (project)."
+            )
+            return
+        # Eén commit aan het einde
+        normalize_project(
+            project_root=self.project_root,
+            json_path=self.json_path,
+            parent=self.parent,
+            commit_to_git=True,
+        )
+
+# [END: _on_mark_project_clicked]
 
 # [FUNC: _choose_project_folder]
     def _choose_project_folder(self):
@@ -281,7 +336,7 @@ class ProjAssistHandlers:
 
 # [FUNC: _delete_project_clicked]
     def _delete_project_clicked(self):
-        """
+        r"""
         Verwijdert project zoals in MainCodeAssist:
         1) .git forceren te wissen
         2) (optioneel) GitHub repo verwijderen met 'Authorization: token <PAT>'
@@ -439,7 +494,7 @@ class ProjAssistHandlers:
 
 # [FUNC: _prime_github_token_from_global_env]
     def _prime_github_token_from_global_env(self):
-        """
+        r"""
         Lees GITHUB_TOKEN / GH_TOKEN uit vaste .env:
         C:\OneDrive\Vioprint\OneDrive - Vioprint\software projecten\Projectassisten2_0\.env
         Zet die in de omgeving vóór GitHub-delete wordt aangeroepen.
@@ -786,9 +841,9 @@ class ProjAssistHandlers:
 
 # [FUNC: _delete_local_venv_variants]
     def _delete_local_venv_variants(self, project_root: Path) -> str:
-        """
-        Probeer ook <project>\\.venv en <project>\\venv te verwijderen.
-        (delete_project pakt al C:\\virt omgeving\\<project>\\venv)
+        r"""
+        Probeer ook <project>\.venv en <project>\venv te verwijderen.
+        (delete_project pakt al C:\virt omgeving\<project>\venv)
         """
         msgs = []
         for cand in (project_root / ".venv", project_root / "venv"):

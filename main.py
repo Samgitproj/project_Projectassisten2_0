@@ -1,16 +1,16 @@
 # main.py
-# [SECTION: Imports & Constants]
+# [SECTION: Imports]
 from __future__ import annotations
+
 import sys
 from pathlib import Path
 from PyQt6 import QtCore, QtWidgets
 
-# [END: Imports & Constants]
+# [END: Imports]
+# Zorg dat projectpaden in sys.path staan (voor import van gui/ en handlers/)
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-
-# Voeg pakketmappen toe (voor het geval Start_Main.bat met andere CWD runt)
 for sub in ("handlers", "services", "gui", "resources"):
     p = ROOT / sub
     if p.is_dir():
@@ -23,9 +23,8 @@ from handlers.projassist_handlers import ProjAssistHandlers
 
 
 # [FUNC: _enable_high_dpi_safe]
-def _enable_high_dpi_safe():
-    """Zet High‑DPI opties aan als je Qt build ze ondersteunt."""
-    # Sommige PyQt6 builds hebben deze niet meer nodig/beschikbaar.
+def _enable_high_dpi_safe() -> None:
+    """Veilige High-DPI instellingen (alleen als attribuut bestaat)."""
     try:
         attr = getattr(QtCore.Qt.ApplicationAttribute, "AA_EnableHighDpiScaling", None)
         if attr is not None:
@@ -41,6 +40,41 @@ def _enable_high_dpi_safe():
 
 # [END: _enable_high_dpi_safe]
 
+# [FUNC: open_code_changer]
+def open_code_changer(
+    parent_dialog: QtWidgets.QDialog, handlers: object | None = None
+) -> None:
+    """
+    Opent de Codewijziger-GUI en koppelt de controller,
+    zodat tab 'Formulier' meteen werkt.
+    """
+    # Lazy imports om start-up licht te houden
+    from gui.codewijziger import Ui_CodeWijzigerWindow
+    from handlers.codewijziger_controller import CodeWijzigerController
+
+    win = QtWidgets.QMainWindow(parent_dialog)
+    ui_cw = Ui_CodeWijzigerWindow()
+    ui_cw.setupUi(win)
+
+    # Controller 'aanzetten' (koppelstuk UI ↔ logica)
+    ctrl = CodeWijzigerController(
+        ui_cw,
+        win,
+        project_root=getattr(handlers, "project_root", None),
+        json_path=getattr(handlers, "json_path", None),
+    )
+
+    # Referenties bewaren zodat venster/ctrl niet door GC gesloten worden
+    parent_dialog._codewijziger_win = win
+    parent_dialog._codewijziger_ui = ui_cw
+    parent_dialog._codewijziger_ctrl = ctrl
+
+    win.show()
+    win.raise_()
+    win.activateWindow()
+
+# [END: open_code_changer]
+
 # [FUNC: main]
 def main() -> int:
     _enable_high_dpi_safe()
@@ -49,19 +83,22 @@ def main() -> int:
     app.setApplicationName("Projectassisten2_0")
     app.setOrganizationName("Vioprint")
 
-    # Hoofdvenster
+    # Hoofd-UI (QDialog zoals in jouw ProjAssist.ui → Ui_Dialog)
     dlg = QtWidgets.QDialog()
     ui = Ui_Dialog()
     ui.setupUi(dlg)
 
-    # Handlers koppelen (referentie bewaren)
-    handlers = ProjAssistHandlers(ui, parent=dlg)  # noqa: F841
+    # Handlers van jouw hoofdapp
+    handlers = ProjAssistHandlers(ui, parent=dlg)  # bewaart o.a. project_root/json_path
 
-    # Eventueel starttab (Scripts & JSON is index 1)
-    try:
-        ui.tabMain.setCurrentIndex(1)
-    except Exception:
-        pass
+    # Koppeling voor Codewijziger-knop (ondersteun beide namen)
+    btn = getattr(ui, "btnOpenCodeChanger", None) or getattr(ui, "btnCodeChanger", None)
+    if btn is not None:
+        try:
+            btn.clicked.disconnect()
+        except Exception:
+            pass
+        btn.clicked.connect(lambda: open_code_changer(dlg, handlers))
 
     dlg.show()
     return app.exec()

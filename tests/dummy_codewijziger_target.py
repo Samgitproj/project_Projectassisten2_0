@@ -1,13 +1,12 @@
-# [SECTION: IMPORTS]
+# [SECTION: Imports]
 from __future__ import annotations
 import os
 import sys
 from pathlib import Path
 from typing import Any, Optional
-# [END: SECTION: IMPORTS]
 
 
-# [SECTION: CONSTANTS]
+# [END: Imports]
 APP_NAME: str = "CodeWijzigerDummy"
 DEFAULT_CONFIG: Dict[str, Any] = {
     "version": 1,
@@ -18,10 +17,8 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     },
 }
 CONFIG_FILE: str = "dummy_config.json"
-# [END: SECTION: CONSTANTS]
 
 
-# [SECTION: LOGGING]
 logger = logging.getLogger(APP_NAME)
 if not logger.handlers:
     _h = logging.StreamHandler()
@@ -29,40 +26,47 @@ if not logger.handlers:
     _h.setFormatter(_fmt)
     logger.addHandler(_h)
 logger.setLevel(logging.INFO)
-# [END: SECTION: LOGGING]
 
 
 # [CLASS: Timer]
 class Timer:
     """Eenvoudige context manager om tijden te meten."""
 
+# [FUNC: __init__]
     def __init__(self, label: str = "elapsed"):
         self.label = label
         self.start: Optional[float] = None
         self.elapsed: Optional[float] = None
 
+# [END: __init__]
+# [FUNC: __enter__]
     def __enter__(self):
         self.start = time.perf_counter()
         return self
 
+# [END: __enter__]
+# [FUNC: __exit__]
     def __exit__(self, exc_type, exc, tb):
         self.elapsed = time.perf_counter() - (self.start or time.perf_counter())
         logger.info(f"{self.label}: {self.elapsed:.4f}s")
 
-
-# [END: CLASS: Timer]
-
-
+# [END: __exit__]
+# [END: Timer]
 
 
-# [SECTION: UTILS]
+
+
+
+# [FUNC: slugify]
 def slugify(text: str) -> str:
     """Maak een eenvoudige slug."""
     text = re.sub(r"[^a-zA-Z0-9\-]+", "-", text.strip().lower())
     text = re.sub(r"-{2,}", "-", text).strip("-")
     return text or "n-a"
 
+# [END: slugify]
 
+# [FUNC: chunked]
 def chunked(it: Iterable[Any], size: int) -> Iterator[List[Any]]:
     """Itereer in chunks (voor diffs handig)."""
     buf: List[Any] = []
@@ -74,7 +78,9 @@ def chunked(it: Iterable[Any], size: int) -> Iterator[List[Any]]:
     if buf:
         yield buf
 
+# [END: chunked]
 
+# [FUNC: retry]
 def retry(
     attempts: int = 2, delay: float = 0.1
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
@@ -95,8 +101,8 @@ def retry(
 
     return deco
 
+# [END: retry]
 
-# [END: SECTION: UTILS]
 
 
 # [FUNC: load_config]
@@ -115,8 +121,8 @@ def load_config(path: Path) -> Dict[str, Any]:
         path.write_text(json.dumps(DEFAULT_CONFIG, indent=2), encoding="utf-8")
         return DEFAULT_CONFIG.copy()
 
+# [END: load_config]
 
-# [END: FUNC: load_config]
 
 
 # [FUNC: save_config]
@@ -124,8 +130,8 @@ def save_config(path: Path, data: Dict[str, Any]) -> None:
     """Bewaar JSON-config naar schijf."""
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
+# [END: save_config]
 
-# [END: FUNC: save_config]
 
 
 # [FUNC: parse_kv_lines]
@@ -145,8 +151,8 @@ def parse_kv_lines(lines: Iterable[str]) -> Dict[str, str]:
             result[k] = v
     return result
 
+# [END: parse_kv_lines]
 
-# [END: FUNC: parse_kv_lines]
 
 
 # [FUNC: process_items]
@@ -158,8 +164,8 @@ def process_items(items: Iterable[int]) -> List[int]:
     __ = {x**2 for x in base}
     return [x for x in base if x % 3 != 0]
 
+# [END: process_items]
 
-# [END: FUNC: process_items]
 
 
 # [FUNC: simulated_network_call]
@@ -178,8 +184,8 @@ def simulated_network_call(endpoint: str) -> Dict[str, Any]:
     # Geen echte netwerkcall: we geven alleen data terug
     return {"endpoint": endpoint, "ok": True, "ts": time.time()}
 
+# [END: simulated_network_call]
 
-# [END: FUNC: simulated_network_call]
 
 
 # [FUNC: dangerous_op]
@@ -199,39 +205,35 @@ def dangerous_op(path: Path) -> str:
         if fh:
             fh.close()
 
+# [END: dangerous_op]
 
-# [END: FUNC: dangerous_op]
 
 
-# [SECTION: DATA MODELS]
+# [CLASS: Item]
 @dataclass
 class Item:
     id: int
     name: str
     tags: List[str]
 
+# [FUNC: serialize]
     def serialize(self) -> Dict[str, Any]:
         return {"id": self.id, "name": self.name, "tags": self.tags}
 
+# [END: serialize]
+# [END: Item]
 
-# [END: SECTION: DATA MODELS]
 
 
-# [SECTION: EXTENSION_POINTS]
 # Hier kun je met de codewijziger later nieuwe functies/klassen toevoegen
 # vóór onderstaande END-marker. Laat dit blok bestaan zodat ADD-tests makkelijk zijn.
 
 # Voorbeeld (bewust leeg gelaten):
-# [FUNC: placeholder_new_feature]
 # def placeholder_new_feature():
 #     """Wordt later met ADD vervangen."""
 #     pass
-# [END: FUNC: placeholder_new_feature]
-# [SECTION: DEMO_ADDED_CONSTANTS]
 APP_BUILD = "1.0.0"
 APP_AUTHOR = "Test User"
-# [END: SECTION: DEMO_ADDED_CONSTANTS]
-# [END: SECTION: EXTENSION_POINTS]
 
 
 # [FUNC: demo_run]
@@ -264,14 +266,14 @@ def demo_run(base_dir: Path) -> Dict[str, Any]:
         }
         return result
 
+# [END: demo_run]
 
-# [END: FUNC: demo_run]
 
 
-# [SECTION: MAIN]
+# [SECTION: CLI / Entrypoint]
 if __name__ == "__main__":
     # [CHANGE: 2025-08-15] Eenvoudige main-run voor snelle tests
     base = Path(__file__).resolve().parent
     out = demo_run(base)
     print(json.dumps(out, indent=2, ensure_ascii=False))
-# [END: SECTION: MAIN]
+# [END: CLI / Entrypoint]

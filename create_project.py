@@ -1,4 +1,4 @@
-# [SECTION: Imports & Constants]
+# [SECTION: Imports]
 import os
 import shutil
 import subprocess
@@ -9,7 +9,7 @@ import requests
 from dotenv import load_dotenv
 
 
-# [END: Imports & Constants]
+# [END: Imports]
 load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_USERNAME = "Samgitproj"  # pas aan indien nodig
